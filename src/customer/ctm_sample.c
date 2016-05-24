@@ -83,14 +83,21 @@ void ctm_delay(U16 cycle) {
 void check_touch_key(U16 key) {
 	static BOOL touch_out_level = 1;
 	static BOOL key_pressed = 0;
+	static int keys[] = {KEY_PAD1, KEY_PAD2, KEY_PAD3};
+	static int leds[] = {LED1, LED2, LED3};
+	static int i = 0;
 	
 	static U8 temp = 0;
 	if(key & KEY_PWRSW) {
-		if(touch_out_level) {
-			drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
-			touch_out_level = 0;
+		if(!(key & KEY_FINGER)) {
+			if(touch_out_level) {
+				drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
+				touch_out_level = 0;
+			}
 		}
-	} else {
+	} 
+	
+	else {
 		if(!touch_out_level) {
 			drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
 			touch_out_level = 1;
@@ -107,51 +114,25 @@ void check_touch_key(U16 key) {
 				ctm_delay(40);  // 40: ~1 mSec
 				
 			}
-			
-			if(key & KEY_PAD1) {
-				if(~(led_level & 0x1)) {
-					drv_set_gpio(LED1 | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
-					led_level |= 0x1;
-				}
-			} else {
-				if(led_level & 0x1) {
-					drv_set_gpio(LED1 | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
-					led_level &= ~0x1;
-				}
-			}
-			
-			if(key & KEY_PAD2) {
-				if(~(led_level & 0x2)) {
-					drv_set_gpio(LED2 | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
-					led_level |= 0x2;
-				}
-			} else {
-				if(led_level & 0x2) {
-					drv_set_gpio(LED2 | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
-					led_level &= ~0x2;
+			for(i = 0; i < 3; i++) {
+				if(key & keys[i]) {
+					if(~(led_level & (0x1 << i))) {
+						drv_set_gpio(leds[i] | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
+						led_level |= (0x1 << i);
+					}						
+				} else {
+					if(led_level & (0x1 << i)) {
+						drv_set_gpio(leds[i] | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
+						led_level &= ~(0x1 << i);
+					}
 				}
 			}
-			
-			if(key & KEY_PAD3) {
-				if(~(led_level & 0x4)) {
-					drv_set_gpio(LED3 | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
-					led_level |= 0x4;
-				}
-			} else {
-				if(led_level & 0x4) {
-					drv_set_gpio(LED3 | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
-					led_level &= ~0x4;
-				}
-			}
-	
 			
 		} 
 		else { 
 			key_pressed = 0;
 			if(led_level) {
-				drv_set_gpio(LED3 | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
-				drv_set_gpio(LED2 | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
-				drv_set_gpio(LED1 | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
+				for(i = 0; i < 3; i++) { drv_set_gpio(leds[i] | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);	}
 				led_level = 0;
 			}
 		}

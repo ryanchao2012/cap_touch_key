@@ -39,7 +39,7 @@ Macro & variables definitions                                  *
 #define                    KEY_PAD1     (0x0080)
 #define                    KEY_PAD2     (0x0040)
 #define                    KEY_PAD3     (0x0020)
-#define                  KEY_FINGRE     (KEY_PAD1)
+#define                  KEY_FINGER     (KEY_PAD1)
 #define   HW_TK18_I2C_MASTER_SAMPLE     (ENABLE)
 
 // -------------- Above ------------------
