@@ -90,7 +90,7 @@ void check_touch_key(U16 key) {
 	static U8 temp = 0;
 	if(key & KEY_PWRSW) {
 		if(!(key & KEY_FINGER)) {
-			if(touch_out_level) {
+			if(touch_out_level & ((GPIODI1 & 0x80) == 0)) {
 				drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
 				touch_out_level = 0;
 			}
@@ -168,6 +168,9 @@ void ctm_sample_init()
 	I2C_Init();
 	Cust_I2C_SetAddress(I2C_ADD_START);
 #endif
+	
+	GPIOOE1 &= ~0x80; // Disable GPIO15 OUTPUT mode
+	GPIOIE1 |=  0x80; // Enable GPIO15 INPUT mode
 /*	
     GPIOIE3 &= ~0x10; // Disable GPIO28 INPUT mode
 	GPIOOE3 |=  0x10; // Enable GPIO28 OUTPUT mode
