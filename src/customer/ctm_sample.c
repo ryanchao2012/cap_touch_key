@@ -86,21 +86,40 @@ void check_touch_key(U16 key) {
 	static int keys[] = {KEY_PAD1, KEY_PAD2, KEY_PAD3};
 	static int leds[] = {LED1, LED2, LED3};
 	static int i = 0;
+	static long FORCE_DOWN_COUNTER = 0;
 	
 	static U8 temp = 0;
+	
 	if(key & KEY_PWRSW) {
-		if(!(key & KEY_FINGER)) {
-			if(touch_out_level & ((GPIODI1 & 0x80) == 0)) {
-				drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
-				touch_out_level = 0;
+		if(((key & KEY_FINGER) != 0) && ((GPIODI2 & 0x8) != 0)) {
+			if(FORCE_DOWN_COUNTER++ > 500) {
+				FORCE_DOWN_COUNTER = 0;
+				if(touch_out_level) {
+					//drv_set_gpio(leds[2] | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
+					drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
+					touch_out_level = 0;
+				}
 			}
 		}
+		else {
+			if(((key & KEY_FINGER) == 0) || ((GPIODI2 & 0x8) == 0)) {
+				if(touch_out_level) {
+					//drv_set_gpio(leds[2] | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
+					drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
+					touch_out_level = 0;
+				}
+			}			
+		}
+		
+		
 	} 
 	
 	else {
 		if(!touch_out_level) {
 			drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
+			drv_set_gpio(leds[2] | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
 			touch_out_level = 1;
+			FORCE_DOWN_COUNTER = 0;
 		}
 		
 		if(key != 0x00) {
@@ -114,6 +133,7 @@ void check_touch_key(U16 key) {
 				ctm_delay(40);  // 40: ~1 mSec
 				
 			}
+			
 			for(i = 0; i < 3; i++) {
 				if(key & keys[i]) {
 					if(~(led_level & (0x1 << i))) {
@@ -127,6 +147,7 @@ void check_touch_key(U16 key) {
 					}
 				}
 			}
+			
 			
 		} 
 		else { 
@@ -169,8 +190,8 @@ void ctm_sample_init()
 	Cust_I2C_SetAddress(I2C_ADD_START);
 #endif
 	
-	GPIOOE1 &= ~0x80; // Disable GPIO15 OUTPUT mode
-	GPIOIE1 |=  0x80; // Enable GPIO15 INPUT mode
+	GPIOOE2 &= ~0x8; // Disable GPIO19 OUTPUT mode
+	GPIOIE2 |=  0x8; // Enable GPIO19 INPUT mode
 /*	
     GPIOIE3 &= ~0x10; // Disable GPIO28 INPUT mode
 	GPIOOE3 |=  0x10; // Enable GPIO28 OUTPUT mode

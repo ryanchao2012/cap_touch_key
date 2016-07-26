@@ -61,12 +61,12 @@
 #if (DB_WATER_PROOF_ENABLE)
 //For Water Proof
 //------Define for TK setup-------------
-#define CTM_BUTTON_MAPPING_TABLE        TK13,TK14,TK16     //Fill the active TK's number to this table.
-#define CTM_BUTTON_SIZE                 3
+#define CTM_BUTTON_MAPPING_TABLE        TK13,TK14,TK15,TK16     //Fill the active TK's number to this table.
+#define CTM_BUTTON_SIZE                 4
 #define CTM_DUMMY_PORTNUM               TK24                    //0xFF: disable
 //------Define for Shielding setup------
-#define CTM_SHIELDING_SIZE              3                       //Set number of Shielding port.
-#define CTM_SHIELDING_TABLE             TK13,TK14,TK16     //Fill the active Shielding TK's number to this table.
+#define CTM_SHIELDING_SIZE              4                       //Set number of Shielding port.
+#define CTM_SHIELDING_TABLE             TK13,TK14,TK15,TK16     //Fill the active Shielding TK's number to this table.
 #else
 //For normal mode
 //------Define for TK setup-------------
