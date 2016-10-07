@@ -79,46 +79,53 @@ void ctm_delay(U16 cycle) {
 	while(i--);
 }
 
+BOOL touch_out(BOOL level) {
+	ctm_delay(40);  // 40: ~1 mSec
+	if(level) {
+		Ctm_Beep_Set(BUZ_ON_TIME);
+		drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
+	} 
+	else {drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);}
+	return !level;
+}
 
 void check_touch_key(U16 key) {
 	static BOOL touch_out_level = 1;
-	static BOOL key_pressed = 0;
-	static int keys[] = {KEY_PAD1, KEY_PAD2, KEY_PAD3};
-	static int leds[] = {LED1, LED2, LED3};
-	static int i = 0;
-	static long FORCE_DOWN_COUNTER = 0;
+	static long force_down_cnt = 0;
+	static long soft_down_cnt = 0;
+	//static BOOL key_pressed = 0;
+	// static int keys[] = {KEY_PAD1, KEY_PAD2, KEY_PAD3};
+	// static int leds[] = {LED1, LED2, LED3};
+	//static int i = 0;
+	//static U8 temp = 0;
 	
-	static U8 temp = 0;
-	
-	if(key & KEY_PWRSW) {
-		if(((key & KEY_FINGER) != 0) && ((GPIODI2 & 0x8) != 0)) {
-			if(FORCE_DOWN_COUNTER++ > 500) {
-				FORCE_DOWN_COUNTER = 0;
-				if(touch_out_level) {
-					//drv_set_gpio(leds[2] | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
-					drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
-					touch_out_level = 0;
-				}
-			}
+	if(key & TOUCH_KEY) {
+		// GPIODI1: POWER_KEY, GPIOOE2: PC_STATUS ((GPIODI1 & 0x80) != 0) && ((GPIOOE2 & 0x8) != 0)
+		if((GPIODI1 & 0x80) != 0 && (GPIODI2 & 0x8) != 0) {
+			if(force_down_cnt > 1200) {
+				if(touch_out_level) { touch_out_level = touch_out(touch_out_level); }
+			} else { force_down_cnt++ ; }
 		}
 		else {
-			if(((key & KEY_FINGER) == 0) || ((GPIODI2 & 0x8) == 0)) {
-				if(touch_out_level) {
-					//drv_set_gpio(leds[2] | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
-					drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
-					touch_out_level = 0;
-				}
-			}			
+			if(soft_down_cnt > 200) {  // 200: ~1s
+				if(touch_out_level) { touch_out_level = touch_out(touch_out_level); }	
+			} else { soft_down_cnt++; }
+				
 		}
-		
-		
-	} 
+	}
+    else {
+		if(!touch_out_level) {
+			touch_out_level = touch_out(touch_out_level);
+		}
+		force_down_cnt = 0;
+		soft_down_cnt = 0;
+	}
 	
+	/* deprecated
 	else {
 		if(!touch_out_level) {
-			drv_set_gpio(TOUCHOUT | GPIO_PUSH_PULL | GPIO_ACTIVE_HIGH);
-			drv_set_gpio(leds[2] | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);
-			touch_out_level = 1;
+			touch_out_level = touch_out(touch_out_level);
+			drv_set_gpio(leds[2] | GPIO_PUSH_PULL | GPIO_ACTIVE_LOW);			
 			FORCE_DOWN_COUNTER = 0;
 		}
 		
@@ -158,6 +165,7 @@ void check_touch_key(U16 key) {
 			}
 		}
 	}
+	*/
 
 }
 
@@ -190,13 +198,19 @@ void ctm_sample_init()
 	Cust_I2C_SetAddress(I2C_ADD_START);
 #endif
 	
+	
+	touch_out(false);
+	// POWER_KEY
+	GPIOOE1 &= ~0x80; // Disable GPIO15 OUTPUT mode
+	GPIOIE1 |=  0x80; // Enable GPIO15 INPUT mode 
+	// PC_STATUS
 	GPIOOE2 &= ~0x8; // Disable GPIO19 OUTPUT mode
 	GPIOIE2 |=  0x8; // Enable GPIO19 INPUT mode
-/*	
+	/*	
     GPIOIE3 &= ~0x10; // Disable GPIO28 INPUT mode
 	GPIOOE3 |=  0x10; // Enable GPIO28 OUTPUT mode
 	GPIODO3 |=  0x10; // Set GPIO28 output LOW
-*/	
+	*/	
 }
 
 

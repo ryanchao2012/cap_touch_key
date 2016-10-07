@@ -33,13 +33,15 @@ Macro & variables definitions                                  *
 #define                        LED1     (GPIO25)
 #define                        LED2     (GPIO17)
 #define                        LED3     (GPIO18)
-#define                   PC_STATUS     (GPIO19)
+//#define                   PC_STATUS     (GPIO19)
+#define                   PC_STATUS     (GPIO15)
+
 #define                    TOUCHOUT     (GPIO0)
-#define                   KEY_PWRSW     (0x0100)
-#define                    KEY_PAD1     (0x0080)
-#define                    KEY_PAD2     (0x0040)
-#define                    KEY_PAD3     (0x0020)
-#define                  KEY_FINGER     (KEY_PAD1)
+#define                   TOUCH_KEY     (0x0100)
+//#define                    KEY_PAD1     (0x0080)
+//#define                    KEY_PAD2     (0x0040)
+//#define                    KEY_PAD3     (0x0020)
+//#define                  KEY_FINGER     (KEY_PAD1)
 #define   HW_TK18_I2C_MASTER_SAMPLE     (ENABLE)
 
 // -------------- Above ------------------

@@ -35,8 +35,8 @@
 #ifndef _USER_TK_H
 #define _USER_TK_H
 
-#define DB_WATER_PROOF_ENABLE           TRUE                    //DemoBoard's water proof function is enable ? TRUE or FALSE.
-//#define DB_WATER_PROOF_ENABLE           FALSE                   //DemoBoard's water proof function is enable ? TRUE or FALSE.
+//#define DB_WATER_PROOF_ENABLE           TRUE                    //DemoBoard's water proof function is enable ? TRUE or FALSE.
+#define DB_WATER_PROOF_ENABLE           FALSE                   //DemoBoard's water proof function is enable ? TRUE or FALSE.
 
 //------Define for Threshold-Rate-------
 #define FINGER_RATE                     RATE40
@@ -61,17 +61,17 @@
 #if (DB_WATER_PROOF_ENABLE)
 //For Water Proof
 //------Define for TK setup-------------
-#define CTM_BUTTON_MAPPING_TABLE        TK13,TK14,TK15,TK16     //Fill the active TK's number to this table.
-#define CTM_BUTTON_SIZE                 4
+#define CTM_BUTTON_MAPPING_TABLE        TK16     //Fill the active TK's number to this table.
+#define CTM_BUTTON_SIZE                 1
 #define CTM_DUMMY_PORTNUM               TK24                    //0xFF: disable
 //------Define for Shielding setup------
-#define CTM_SHIELDING_SIZE              4                       //Set number of Shielding port.
-#define CTM_SHIELDING_TABLE             TK13,TK14,TK15,TK16     //Fill the active Shielding TK's number to this table.
+#define CTM_SHIELDING_SIZE              1                      //Set number of Shielding port.
+#define CTM_SHIELDING_TABLE             TK16     //Fill the active Shielding TK's number to this table.
 #else
 //For normal mode
 //------Define for TK setup-------------
-#define CTM_BUTTON_MAPPING_TABLE        TK13,TK14,TK16     //Fill the active TK's number to this table.
-#define CTM_BUTTON_SIZE                 3
+#define CTM_BUTTON_MAPPING_TABLE        TK16     //Fill the active TK's number to this table.
+#define CTM_BUTTON_SIZE                 1
 #define CTM_DUMMY_PORTNUM               TK24                    //0xFF: disable
 //------Define for Shielding setup------
 #define CTM_SHIELDING_SIZE              0                       //Set number of Shielding port.

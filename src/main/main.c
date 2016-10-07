@@ -32,12 +32,18 @@
 #include <stdio.h>  
 
 
-/*
-PAD1   [1]0x80 
+/* deprecated
+PAD1   [1]0x80  
 PAD2   [1]0x40
 PAD3   [1]0x20
 PWRSW  [2]0x01
 BUZZER    PWM0
+*/
+
+/* 
+TOUCH_KEY  [2]0x01,   TK16, PIN12,
+PC_STATUS           GPIO15, PIN11
+BUZZER     PWM0
 */
 
 
